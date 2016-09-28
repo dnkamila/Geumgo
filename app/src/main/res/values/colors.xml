@@ -6,6 +6,10 @@
 
     <color name="blue">#00abea</color>
     <color name="white">#ffffff</color>
+    <color name="red">#ff0000</color>
+    <color name="orange">#ffa500</color>
+    <color name="yellow">#ffff00</color>
+    <color name="gray">#AAAAAA</color>
 </resources>
 
 
