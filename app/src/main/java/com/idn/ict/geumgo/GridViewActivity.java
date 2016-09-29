@@ -3,6 +3,7 @@ package com.idn.ict.geumgo;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -40,19 +41,35 @@ public class GridViewActivity extends AppCompatActivity {
     private String status = "0";
 
     private GridViewAdapter gridViewAdapter;
+    private SwipeRefreshLayout mySwipeRefreshLayout;
+
     private ArrayList<GridViewItem> gridViewItems;
     private final String RETRIEVE_LOG_URL = "http://192.168.137.2/retrieve_log.php";
     private final String UPDATE_STATUS_URL = "http://192.168.137.2/update_status.php";
     private final String RETRIEVE_STATUS_URL =  "http://192.168.137.2/retrieve_status.php";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.grid_view_activity);
 
+
         imageView = (ImageView) findViewById(R.id.grid_item_switch);
         gridView = (GridView) findViewById(R.id.gridView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        mySwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        mySwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        new RetrieveStatusTask().execute(RETRIEVE_STATUS_URL);
+                        new RetrieveLogTask().execute(RETRIEVE_LOG_URL);
+                        progressBar.setVisibility(View.VISIBLE);
+                    }
+                }
+        );
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +115,8 @@ public class GridViewActivity extends AppCompatActivity {
         new RetrieveStatusTask().execute(RETRIEVE_STATUS_URL);
         new RetrieveLogTask().execute(RETRIEVE_LOG_URL);
         progressBar.setVisibility(View.VISIBLE);
+        mySwipeRefreshLayout.setRefreshing(true);
+
     }
 
     private String streamToString(InputStream stream) throws IOException {
@@ -146,6 +165,8 @@ public class GridViewActivity extends AppCompatActivity {
             }
 
             progressBar.setVisibility(View.GONE);
+            mySwipeRefreshLayout.setRefreshing(false);
+
         }
     }
 
